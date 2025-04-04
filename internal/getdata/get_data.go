@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/Daniel-C-R/t8-client-go/internal/decoder"
+	"gonum.org/v1/gonum/floats"
 )
 
 type WaveformResponse struct {
@@ -25,12 +28,9 @@ type WaveformResponse struct {
 //   - password: The password for authentication (not currently used in the function).
 //
 // Returns:
-//   - A string containing the raw waveform data.
+//   - A slice of float64 representing the decoded waveform data.
 //   - A float64 representing the sample rate of the waveform.
 //   - An error if the request fails or the response cannot be decoded.
-//
-// TODO:
-//   - Waveform data is encoded as a base64 zlib compressed string. It should be decoded as returned as a float64 array.
 func GetWaveform(
 	host string,
 	machine string,
@@ -39,12 +39,12 @@ func GetWaveform(
 	timestamp int64,
 	user string,
 	password string,
-) (string, float64, error) {
+) ([]float64, float64, error) {
 	url := fmt.Sprintf("%s/waves/%s/%s/%s/%d", host, machine, point, pmode, timestamp)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return "", 0, fmt.Errorf("error creating request: %w", err)
+		return nil, 0, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.SetBasicAuth(user, password)
@@ -52,7 +52,7 @@ func GetWaveform(
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", 0, fmt.Errorf("error making GET request: %w", err)
+		return nil, 0, fmt.Errorf("error making GET request: %w", err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -61,18 +61,25 @@ func GetWaveform(
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", 0, fmt.Errorf("error reading response body: %w", err)
+		return nil, 0, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	var waveformResponse WaveformResponse
 	if err := json.Unmarshal(body, &waveformResponse); err != nil {
-		return "", 0, fmt.Errorf("error decoding JSON response: %w", err)
+		return nil, 0, fmt.Errorf("error decoding JSON response: %w", err)
 	}
 
-	return waveformResponse.RawWaveform, waveformResponse.SampleRate, nil
+	waveform, err := decoder.ZintToFloat(waveformResponse.RawWaveform)
+	if err != nil {
+		return nil, 0, fmt.Errorf("error decoding waveform data: %w", err)
+	}
+
+	floats.Scale(waveformResponse.Factor, waveform)
+
+	return waveform, waveformResponse.SampleRate, nil
 }
