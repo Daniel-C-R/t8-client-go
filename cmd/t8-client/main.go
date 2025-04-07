@@ -58,13 +58,19 @@ func main() {
 	fmt.Println("Waveform plot saved to output/waveform.png")
 
 	// T8 Spectrum
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
+	t8_spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
 	if err != nil {
 		fmt.Println("Error getting T8 spectrum:", err)
 		return
 	}
 
-	plot, err = plotutil.PlotSpectrum(spectrum, fmin, fmax)
+	t8_freqs := make([]float64, len(t8_spectrum))
+	step := (fmax - fmin) / float64(len(t8_spectrum)-1)
+	for i := range t8_freqs {
+		t8_freqs[i] = fmin + step*float64(i)
+	}
+
+	plot, err = plotutil.PlotSpectrum(t8_spectrum, t8_freqs, fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting T8 spectrum:", err)
 		return

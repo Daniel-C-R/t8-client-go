@@ -27,12 +27,12 @@ func PlotWaveform(waveform []float64, sampleRate float64) (*plot.Plot, error) {
 	return p, nil
 }
 
-func PlotSpectrum(spectrum []float64, fmin, fmax float64) (*plot.Plot, error) {
+func PlotSpectrum(spectrum, freqs []float64, fmin, fmax float64) (*plot.Plot, error) {
 	p := plot.New()
 
 	pts := make(plotter.XYs, len(spectrum))
 	for i := range spectrum {
-		pts[i].X = fmin + float64(i)*(fmax-fmin)/float64(len(spectrum)-1)
+		pts[i].X = freqs[i]
 		pts[i].Y = spectrum[i]
 	}
 
