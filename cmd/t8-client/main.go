@@ -55,6 +55,8 @@ func main() {
 		return
 	}
 
+	fmt.Println("Waveform plot saved to output/waveform.png")
+
 	// T8 Spectrum
 	spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
 	if err != nil {
@@ -62,5 +64,16 @@ func main() {
 		return
 	}
 
-	fmt.Print(spectrum, fmin, fmax)
+	plot, err = plotutil.PlotSpectrum(spectrum, fmin, fmax)
+	if err != nil {
+		fmt.Println("Error plotting T8 spectrum:", err)
+		return
+	}
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/spectrum.png")
+	if err != nil {
+		fmt.Println("Error saving plot:", err)
+		return
+	}
+
+	fmt.Println("T8 spectrum plot saved to output/spectrum.png")
 }
