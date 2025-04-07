@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
+	"github.com/Daniel-C-R/t8-client-go/internal/plotutil"
+	"gonum.org/v1/plot/vg"
 )
 
 const (
@@ -29,11 +31,26 @@ func main() {
 		password,
 	)
 
-	rawWaveform, sampleRate, err := getdata.GetWaveform(urlParams)
+	waveform, sampleRate, err := getdata.GetWaveform(urlParams)
 	if err != nil {
 		fmt.Println("Error getting waveform:", err)
 		return
 	}
-	fmt.Println("Waveform:", rawWaveform)
-	fmt.Println("Sample Rate:", sampleRate)
+
+	plot, err := plotutil.PlotWaveform(waveform, sampleRate)
+	if err != nil {
+		fmt.Println("Error plotting waveform:", err)
+		return
+	}
+	err = os.MkdirAll("output", os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating output directory:", err)
+		return
+	}
+
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/waveform.png")
+	if err != nil {
+		fmt.Println("Error saving plot:", err)
+		return
+	}
 }
