@@ -32,8 +32,8 @@ func ZintToFloat(raw string) ([]float64, error) {
 		return nil, err
 	}
 
-	var decompsressedData bytes.Buffer
-	if _, err := decompsressedData.ReadFrom(r); err != nil {
+	var decompressedData bytes.Buffer
+	if _, err := decompressedData.ReadFrom(r); err != nil {
 		return nil, err
 	}
 	err = r.Close()
@@ -41,10 +41,10 @@ func ZintToFloat(raw string) ([]float64, error) {
 		return nil, err
 	}
 
-	array := make([]float64, decompsressedData.Len()/8)
-	err = binary.Read(&decompsressedData, binary.LittleEndian, array)
-	if err != nil {
-		return nil, err
+	data := decompressedData.Bytes()
+	array := make([]float64, len(data)/2)
+	for i := 0; i < len(array); i++ {
+		array[i] = float64(int16(binary.LittleEndian.Uint16(data[i*2 : (i+1)*2])))
 	}
 
 	return array, nil
