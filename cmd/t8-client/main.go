@@ -31,6 +31,7 @@ func main() {
 		password,
 	)
 
+	// Waveform
 	waveform, sampleRate, err := getdata.GetWaveform(urlParams)
 	if err != nil {
 		fmt.Println("Error getting waveform:", err)
@@ -53,4 +54,13 @@ func main() {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
+
+	// T8 Spectrum
+	spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
+	if err != nil {
+		fmt.Println("Error getting T8 spectrum:", err)
+		return
+	}
+
+	fmt.Print(spectrum, fmin, fmax)
 }
