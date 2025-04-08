@@ -91,6 +91,34 @@ type SpectrumResponse struct {
 	Fmax        float64 `json:"max_freq"`
 }
 
+// GetSpectrum retrieves a spectrum from a remote server based on the provided parameters.
+// It sends an HTTP GET request to the specified endpoint, parses the response, and returns
+// the spectrum data along with the minimum and maximum frequency values.
+//
+// Parameters:
+//   - urlParams: A PmodeUrlTimeParams struct containing the necessary parameters for the request,
+//     including host, machine, point, pmode, datetime, user, and password.
+//
+// Returns:
+//   - []float64: The decoded spectrum data as a slice of float64 values.
+//   - float64: The minimum frequency value (Fmin) of the spectrum.
+//   - float64: The maximum frequency value (Fmax) of the spectrum.
+//   - error: An error object if any issues occur during the process, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the datetime conversion fails.
+//   - Returns an error if the HTTP request cannot be created or executed.
+//   - Returns an error if the response status code is not 200 OK.
+//   - Returns an error if the response body cannot be read or parsed as JSON.
+//   - Returns an error if the spectrum data cannot be decoded.
+//
+// Example usage:
+//
+//	spectrum, fmin, fmax, err := GetSpectrum(urlParams)
+//	if err != nil {
+//	    log.Fatalf("Failed to get spectrum: %v", err)
+//	}
+//	fmt.Printf("Spectrum: %v, Fmin: %f, Fmax: %f\n", spectrum, fmin, fmax)
 func GetSpectrum(urlParams PmodeUrlTimeParams) ([]float64, float64, float64, error) {
 	timestamp, err := timeutil.IsoStringToTimestamp(urlParams.DateTime)
 	if err != nil {

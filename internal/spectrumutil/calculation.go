@@ -8,6 +8,18 @@ import (
 	"gonum.org/v1/gonum/dsp/fourier"
 )
 
+// CalculateSpectrum computes the spectrum of a given waveform using FFT (Fast Fourier Transform)
+// and filters the resulting frequencies and magnitudes within a specified range.
+//
+// Parameters:
+//   - waveform: A slice of float64 representing the input waveform signal.
+//   - sampleRate: The sampling rate of the waveform in Hz.
+//   - fmin: The minimum frequency of interest in Hz.
+//   - fmax: The maximum frequency of interest in Hz.
+//
+// Returns:
+//   - A slice of float64 containing the magnitudes of the spectrum within the specified frequency range.
+//   - A slice of float64 containing the corresponding frequencies within the specified range.
 func CalculateSpectrum(waveform []float64, sampleRate, fmin, fmax float64) ([]float64, []float64) {
 	// Perform FFT on the waveform
 	fft := fourier.NewFFT(len(waveform))
