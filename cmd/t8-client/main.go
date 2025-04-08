@@ -6,6 +6,8 @@ import (
 
 	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
 	"github.com/Daniel-C-R/t8-client-go/internal/plotutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/spectrumutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/waveformutil"
 	"gonum.org/v1/plot/vg"
 )
 
@@ -82,4 +84,21 @@ func main() {
 	}
 
 	fmt.Println("T8 spectrum plot saved to output/spectrum.png")
+
+	// FFT Spectrum
+	preprocessedWaveform := waveformutil.PreprocessWaveform(waveform)
+
+	spectrum, freqs := spectrumutil.CalculateSpectrum(preprocessedWaveform, sampleRate, fmin, fmax)
+
+	plot, err = plotutil.PlotSpectrum(spectrum, freqs, fmin, fmax)
+	if err != nil {
+		fmt.Println("Error plotting FFT spectrum:", err)
+		return
+	}
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/fft_spectrum.png")
+	if err != nil {
+		fmt.Println("Error saving plot:", err)
+		return
+	}
+	fmt.Println("FFT spectrum plot saved to output/fft_spectrum.png")
 }
