@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -11,24 +12,29 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-const (
-	host     = "https://lzfs45.mirror.twave.io/lzfs45/rest"
-	machine  = "LP_Turbine"
-	point    = "MAD31CY005"
-	pmode    = "AM1"
-	dateTime = "2019-04-11T18:25:54"
-)
-
 func main() {
+	host := flag.String("host", "", "Host URL")
+	machine := flag.String("machine", "", "Machine name")
+	point := flag.String("point", "", "Point name")
+	pmode := flag.String("pmode", "", "Pmode value")
+	dateTime := flag.String("datetime", "", "Date and time")
+	flag.Parse()
+
+	if *host == "" || *machine == "" || *point == "" || *pmode == "" || *dateTime == "" {
+		fmt.Println("All parameters (host, machine, point, pmode, datetime) are required.")
+		flag.Usage()
+		return
+	}
+
 	user := os.Getenv("T8_CLIENT_USER")
 	password := os.Getenv("T8_CLIENT_PASSWORD")
 
 	urlParams := getdata.NewPmodeUrlTimeParams(
-		host,
-		machine,
-		point,
-		pmode,
-		dateTime,
+		*host,
+		*machine,
+		*point,
+		*pmode,
+		*dateTime,
 		user,
 		password,
 	)
