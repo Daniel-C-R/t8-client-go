@@ -1,3 +1,6 @@
+# Output folder
+output/
+
 # Mac OS X files
 .DS_Store
 
