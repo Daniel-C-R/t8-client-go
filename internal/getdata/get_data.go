@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Daniel-C-R/t8-client-go/internal/decoder"
+	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"github.com/Daniel-C-R/t8-client-go/internal/timeutil"
 	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/floats"
@@ -95,36 +96,20 @@ type SpectrumResponse struct {
 
 // GetSpectrum retrieves a spectrum from a remote server based on the provided parameters.
 // It sends an HTTP GET request to the specified endpoint, parses the response, and returns
-// the spectrum data along with the minimum and maximum frequency values.
+// the spectrum data as a Spectrum struct.
 //
 // Parameters:
-//   - urlParams: A PmodeUrlTimeParams struct containing the necessary parameters for the request,
-//     including host, machine, point, pmode, datetime, user, and password.
+//   - urlParams: A PmodeUrlTimeParams struct containing the necessary parameters for the request.
 //
 // Returns:
-//   - []float64: The decoded spectrum data as a slice of float64 values.
-//   - float64: The minimum frequency value (Fmin) of the spectrum.
-//   - float64: The maximum frequency value (Fmax) of the spectrum.
+//   - Spectrum: The decoded spectrum data as a Spectrum struct.
+//   - fmin: The minimum frequency of the spectrum.
+//   - fmax: The maximum frequency of the spectrum.
 //   - error: An error object if any issues occur during the process, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the datetime conversion fails.
-//   - Returns an error if the HTTP request cannot be created or executed.
-//   - Returns an error if the response status code is not 200 OK.
-//   - Returns an error if the response body cannot be read or parsed as JSON.
-//   - Returns an error if the spectrum data cannot be decoded.
-//
-// Example usage:
-//
-//	spectrum, fmin, fmax, err := GetSpectrum(urlParams)
-//	if err != nil {
-//	    log.Fatalf("Failed to get spectrum: %v", err)
-//	}
-//	fmt.Printf("Spectrum: %v, Fmin: %f, Fmax: %f\n", spectrum, fmin, fmax)
-func GetSpectrum(urlParams PmodeUrlTimeParams) ([]float64, float64, float64, error) {
+func GetSpectrum(urlParams PmodeUrlTimeParams) (spectra.Spectrum, float64, float64, error) {
 	timestamp, err := timeutil.IsoStringToTimestamp(urlParams.DateTime)
 	if err != nil {
-		return nil, 0, 0, err
+		return spectra.Spectrum{}, 0, 0, err
 	}
 
 	url := fmt.Sprintf(
@@ -138,7 +123,7 @@ func GetSpectrum(urlParams PmodeUrlTimeParams) ([]float64, float64, float64, err
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("error creating request: %w", err)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.SetBasicAuth(urlParams.User, urlParams.Password)
@@ -146,7 +131,7 @@ func GetSpectrum(urlParams PmodeUrlTimeParams) ([]float64, float64, float64, err
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("error making GET request: %w", err)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error making GET request: %w", err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -155,25 +140,36 @@ func GetSpectrum(urlParams PmodeUrlTimeParams) ([]float64, float64, float64, err
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, 0, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("error reading response body: %w", err)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	var spectrumResponse SpectrumResponse
 	if err := json.Unmarshal(body, &spectrumResponse); err != nil {
-		return nil, 0, 0, fmt.Errorf("error decoding JSON response: %w", err)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error decoding JSON response: %w", err)
 	}
 
 	spectrum, err := decoder.ZintToFloat(spectrumResponse.RawSpectrum)
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("error decoding spectrum data: %w", err)
+		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error decoding spectrum data: %w", err)
 	}
 
 	floats.Scale(spectrumResponse.Factor, spectrum)
 
-	return spectrum, spectrumResponse.Fmin, spectrumResponse.Fmax, nil
+	frequencies := make([]float64, len(spectrum))
+	step := (spectrumResponse.Fmax - spectrumResponse.Fmin) / float64(len(spectrum)-1)
+	for i := range frequencies {
+		frequencies[i] = spectrumResponse.Fmin + step*float64(i)
+	}
+
+	spectrumObject := spectra.Spectrum{
+		Frequencies: frequencies,
+		Magnitudes:  spectrum,
+	}
+
+	return spectrumObject, spectrumResponse.Fmin, spectrumResponse.Fmax, nil
 }

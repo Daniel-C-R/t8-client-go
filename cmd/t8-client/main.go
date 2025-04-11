@@ -7,7 +7,7 @@ import (
 
 	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
 	"github.com/Daniel-C-R/t8-client-go/internal/plotutil"
-	"github.com/Daniel-C-R/t8-client-go/internal/spectrumutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"gonum.org/v1/plot/vg"
 )
 
@@ -71,13 +71,7 @@ func main() {
 		return
 	}
 
-	t8_freqs := make([]float64, len(t8_spectrum))
-	step := (fmax - fmin) / float64(len(t8_spectrum)-1)
-	for i := range t8_freqs {
-		t8_freqs[i] = fmin + step*float64(i)
-	}
-
-	plot, err = plotutil.PlotSpectrum(t8_spectrum, t8_freqs, fmin, fmax)
+	plot, err = plotutil.PlotSpectrum(t8_spectrum, fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting T8 spectrum:", err)
 		return
@@ -93,9 +87,9 @@ func main() {
 	// FFT Spectrum
 	waveform.Preprocess()
 
-	spectrum, freqs := spectrumutil.CalculateSpectrum(waveform, fmin, fmax)
+	spectrum := spectra.SpectrumFromWaveform(waveform, fmin, fmax)
 
-	plot, err = plotutil.PlotSpectrum(spectrum, freqs, fmin, fmax)
+	plot, err = plotutil.PlotSpectrum(spectrum, fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting FFT spectrum:", err)
 		return

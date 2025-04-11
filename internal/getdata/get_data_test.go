@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
+	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/floats"
 )
@@ -231,8 +232,13 @@ func TestGetSpectrumSuccess(t *testing.T) {
 		Fmax:        1280.0,
 	}
 
-	expectedSpectrum := []float64{1, -1, 3.2767e04, -3.2768e04}
-	floats.Scale(mockSpectrumResponse.Factor, expectedSpectrum)
+	expected_magnitudes := []float64{1, -1, 3.2767e04, -3.2768e04}
+	floats.Scale(mockSpectrumResponse.Factor, expected_magnitudes)
+	expectedSpectrum := spectra.NewSpectrum(
+		expected_magnitudes,
+		mockSpectrumResponse.Fmin,
+		mockSpectrumResponse.Fmax,
+	)
 
 	mock_server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -297,8 +303,8 @@ func TestGetSpectrumFailure(t *testing.T) {
 		t.Fatalf("expected error, got none")
 	}
 
-	if spectrum != nil {
-		t.Errorf("expected nil spectrum, got %v", spectrum)
+	if !reflect.DeepEqual(spectrum, spectra.Spectrum{}) {
+		t.Errorf("expected empty spectrum, got %v", spectrum)
 	}
 
 	if fmin != 0 {
@@ -338,8 +344,8 @@ func TestGetSpectrumInvalidJSON(t *testing.T) {
 		t.Fatalf("expected error, got none")
 	}
 
-	if spectrum != nil {
-		t.Errorf("expected nil spectrum, got %v", spectrum)
+	if !reflect.DeepEqual(spectrum, spectra.Spectrum{}) {
+		t.Errorf("expected empty spectrum, got %v", spectrum)
 	}
 
 	if fmin != 0 {
@@ -379,8 +385,8 @@ func TestGetSpectrumInvalidTimestamp(t *testing.T) {
 		t.Fatalf("expected error, got none")
 	}
 
-	if spectrum != nil {
-		t.Errorf("expected nil spectrum, got %v", spectrum)
+	if !reflect.DeepEqual(spectrum, spectra.Spectrum{}) {
+		t.Errorf("expected empty spectrum, got %v", spectrum)
 	}
 
 	if fmin != 0 {
@@ -420,8 +426,8 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 		t.Fatalf("expected error, got none")
 	}
 
-	if spectrum != nil {
-		t.Errorf("expected nil spectrum, got %v", spectrum)
+	if !reflect.DeepEqual(spectrum, spectra.Spectrum{}) {
+		t.Errorf("expected empty spectrum, got %v", spectrum)
 	}
 
 	if fmin != 0 {
@@ -465,8 +471,8 @@ func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
 		t.Fatalf("expected error, got none")
 	}
 
-	if spectrum != nil {
-		t.Errorf("expected nil spectrum, got %v", spectrum)
+	if !reflect.DeepEqual(spectrum, spectra.Spectrum{}) {
+		t.Errorf("expected empty spectrum, got %v", spectrum)
 	}
 
 	if fmin != 0 {

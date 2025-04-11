@@ -1,6 +1,7 @@
 package plotutil
 
 import (
+	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -39,26 +40,24 @@ func PlotWaveform(waveform waveforms.Waveform) (*plot.Plot, error) {
 }
 
 // PlotSpectrum creates a plot of a spectrum given its magnitude values and corresponding
-// frequency values. The function takes the spectrum data, frequency data, and a frequency
-// range (fmin and fmax) as input, and returns a pointer to a plot.Plot object or an error
-// if the plot cannot be created.
+// frequency values. The function takes a Spectrum struct and a frequency range (fmin and fmax)
+// as input, and returns a pointer to a plot.Plot object or an error if the plot cannot be created.
 //
 // Parameters:
-//   - spectrum: A slice of float64 representing the magnitude values of the spectrum.
-//   - freqs: A slice of float64 representing the corresponding frequency values.
+//   - spectrum: A Spectrum struct containing the magnitude and frequency values.
 //   - fmin: The minimum frequency value to be displayed on the plot (not currently used).
 //   - fmax: The maximum frequency value to be displayed on the plot (not currently used).
 //
 // Returns:
 //   - *plot.Plot: A pointer to the created plot.Plot object.
 //   - error: An error if the plot creation fails.
-func PlotSpectrum(spectrum, freqs []float64, fmin, fmax float64) (*plot.Plot, error) {
+func PlotSpectrum(spectrum spectra.Spectrum, fmin, fmax float64) (*plot.Plot, error) {
 	p := plot.New()
 
-	pts := make(plotter.XYs, len(spectrum))
-	for i := range spectrum {
-		pts[i].X = freqs[i]
-		pts[i].Y = spectrum[i]
+	pts := make(plotter.XYs, len(spectrum.Magnitudes))
+	for i := range spectrum.Magnitudes {
+		pts[i].X = spectrum.Frequencies[i]
+		pts[i].Y = spectrum.Magnitudes[i]
 	}
 
 	line, err := plotter.NewLine(pts)
