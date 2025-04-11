@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/cmplx"
 
+	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/cmplxs"
 	"gonum.org/v1/gonum/dsp/fourier"
 )
@@ -12,18 +13,17 @@ import (
 // and filters the resulting frequencies and magnitudes within a specified range.
 //
 // Parameters:
-//   - waveform: A slice of float64 representing the input waveform signal.
-//   - sampleRate: The sampling rate of the waveform in Hz.
+//   - waveform: A waveforms.Waveform struct containing the waveform data.
 //   - fmin: The minimum frequency of interest in Hz.
 //   - fmax: The maximum frequency of interest in Hz.
 //
 // Returns:
 //   - A slice of float64 containing the magnitudes of the spectrum within the specified frequency range.
 //   - A slice of float64 containing the corresponding frequencies within the specified range.
-func CalculateSpectrum(waveform []float64, sampleRate, fmin, fmax float64) ([]float64, []float64) {
+func CalculateSpectrum(waveform waveforms.Waveform, fmin, fmax float64) ([]float64, []float64) {
 	// Perform FFT on the waveform
-	fft := fourier.NewFFT(len(waveform))
-	spectrum := fft.Coefficients(nil, waveform)
+	fft := fourier.NewFFT(len(waveform.Samples))
+	spectrum := fft.Coefficients(nil, waveform.Samples)
 	cmplxs.Scale(complex(math.Sqrt(2), 0), spectrum)
 
 	// Calculate magnitudes and frequencies
@@ -31,7 +31,7 @@ func CalculateSpectrum(waveform []float64, sampleRate, fmin, fmax float64) ([]fl
 	frequencies := make([]float64, len(spectrum))
 	for i, c := range spectrum {
 		magnitudes[i] = cmplx.Abs(c) / float64(len(spectrum))
-		frequencies[i] = float64(i) * sampleRate / float64(len(waveform))
+		frequencies[i] = float64(i) * waveform.SampleRate / float64(len(waveform.Samples))
 	}
 
 	// Filter the spectrum and frequencies within the specified range

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
+	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/floats"
 )
 
@@ -19,8 +20,11 @@ func TestGetWaveformSuccess(t *testing.T) {
 		SampleRate:  2560,
 	}
 
-	expectedWaveform := []float64{1, -1, 3.2767e04, -3.2768e04}
-	floats.Scale(mockWaveformResponse.Factor, expectedWaveform)
+	expectedWaveform := waveforms.Waveform{
+		Samples:    []float64{1, -1, 3.2767e04, -3.2768e04},
+		SampleRate: 2560,
+	}
+	floats.Scale(mockWaveformResponse.Factor, expectedWaveform.Samples)
 
 	mock_server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -42,17 +46,13 @@ func TestGetWaveformSuccess(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
 	if !reflect.DeepEqual(waveform, expectedWaveform) {
 		t.Errorf("expected waveform %v, got %v", expectedWaveform, waveform)
-	}
-
-	if sampleRate != mockWaveformResponse.SampleRate {
-		t.Errorf("expected sample rate %v, got %v", mockWaveformResponse.SampleRate, sampleRate)
 	}
 }
 
@@ -75,18 +75,14 @@ func TestGetWaveformFailure(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
 	}
 
-	if waveform != nil {
-		t.Errorf("expected nil waveform, got %v", waveform)
-	}
-
-	if sampleRate != 0 {
-		t.Errorf("expected sample rate 0, got %v", sampleRate)
+	if !reflect.DeepEqual(waveform, waveforms.Waveform{}) {
+		t.Errorf("expected empty waveform, got %v", waveform)
 	}
 }
 
@@ -112,18 +108,14 @@ func TestGetWaveformInvalidJSON(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
 	}
 
-	if waveform != nil {
-		t.Errorf("expected nil waveform, got %v", waveform)
-	}
-
-	if sampleRate != 0 {
-		t.Errorf("expected sample rate 0, got %v", sampleRate)
+	if !reflect.DeepEqual(waveform, waveforms.Waveform{}) {
+		t.Errorf("expected empty waveform, got %v", waveform)
 	}
 }
 
@@ -149,18 +141,14 @@ func TestGetWaveformInvalidTimestamp(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
 	}
 
-	if waveform != nil {
-		t.Errorf("expected nil waveform, got %v", waveform)
-	}
-
-	if sampleRate != 0 {
-		t.Errorf("expected sample rate 0, got %v", sampleRate)
+	if !reflect.DeepEqual(waveform, waveforms.Waveform{}) {
+		t.Errorf("expected empty waveform, got %v", waveform)
 	}
 }
 
@@ -186,18 +174,14 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
 	}
 
-	if waveform != nil {
-		t.Errorf("expected nil waveform, got %v", waveform)
-	}
-
-	if sampleRate != 0 {
-		t.Errorf("expected sample rate 0, got %v", sampleRate)
+	if !reflect.DeepEqual(waveform, waveforms.Waveform{}) {
+		t.Errorf("expected empty waveform, got %v", waveform)
 	}
 }
 
@@ -227,18 +211,14 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 		"password",
 	)
 
-	waveform, sampleRate, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
 	}
 
-	if waveform != nil {
-		t.Errorf("expected nil waveform, got %v", waveform)
-	}
-
-	if sampleRate != 0 {
-		t.Errorf("expected sample rate 0, got %v", sampleRate)
+	if !reflect.DeepEqual(waveform, waveforms.Waveform{}) {
+		t.Errorf("expected empty waveform, got %v", waveform)
 	}
 }
 

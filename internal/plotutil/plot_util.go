@@ -1,6 +1,7 @@
 package plotutil
 
 import (
+	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 )
@@ -10,19 +11,18 @@ import (
 // the amplitude of the waveform.
 //
 // Parameters:
-//   - waveform: A slice of float64 values representing the amplitude of the waveform.
-//   - sampleRate: A float64 value representing the number of samples per second.
+//   - waveform: A waveforms.Waveform struct containing the waveform data.
 //
 // Returns:
 //   - *plot.Plot: A pointer to the generated plot.Plot object.
 //   - error: An error if the plot creation or line addition fails.
-func PlotWaveform(waveform []float64, sampleRate float64) (*plot.Plot, error) {
+func PlotWaveform(waveform waveforms.Waveform) (*plot.Plot, error) {
 	p := plot.New()
 
-	pts := make(plotter.XYs, len(waveform))
-	for i := range waveform {
-		pts[i].X = float64(i) / sampleRate
-		pts[i].Y = waveform[i]
+	pts := make(plotter.XYs, len(waveform.Samples))
+	for i := range waveform.Samples {
+		pts[i].X = float64(i) / waveform.SampleRate
+		pts[i].Y = waveform.Samples[i]
 	}
 
 	line, err := plotter.NewLine(pts)

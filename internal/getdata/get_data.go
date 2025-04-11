@@ -8,6 +8,7 @@ import (
 
 	"github.com/Daniel-C-R/t8-client-go/internal/decoder"
 	"github.com/Daniel-C-R/t8-client-go/internal/timeutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/floats"
 )
 
@@ -24,13 +25,12 @@ type WaveformResponse struct {
 //     dateTime, user, and password for the request.
 //
 // Returns:
-//   - A slice of float64 representing the decoded waveform data.
-//   - A float64 representing the sample rate of the waveform.
+//   - waveforms.Waveform: The decoded waveform data.
 //   - An error if the request fails or the response cannot be decoded.
-func GetWaveform(urlParams PmodeUrlTimeParams) ([]float64, float64, error) {
+func GetWaveform(urlParams PmodeUrlTimeParams) (waveforms.Waveform, error) {
 	timestamp, err := timeutil.IsoStringToTimestamp(urlParams.DateTime)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error parsing timestamp: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error parsing timestamp: %w", err)
 	}
 
 	url := fmt.Sprintf(
@@ -44,7 +44,7 @@ func GetWaveform(urlParams PmodeUrlTimeParams) ([]float64, float64, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error creating request: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.SetBasicAuth(urlParams.User, urlParams.Password)
@@ -52,7 +52,7 @@ func GetWaveform(urlParams PmodeUrlTimeParams) ([]float64, float64, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error making GET request: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error making GET request: %w", err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -61,27 +61,29 @@ func GetWaveform(urlParams PmodeUrlTimeParams) ([]float64, float64, error) {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return waveforms.Waveform{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error reading response body: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	var waveformResponse WaveformResponse
 	if err := json.Unmarshal(body, &waveformResponse); err != nil {
-		return nil, 0, fmt.Errorf("error decoding JSON response: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error decoding JSON response: %w", err)
 	}
 
-	waveform, err := decoder.ZintToFloat(waveformResponse.RawWaveform)
+	samples, err := decoder.ZintToFloat(waveformResponse.RawWaveform)
 	if err != nil {
-		return nil, 0, fmt.Errorf("error decoding waveform data: %w", err)
+		return waveforms.Waveform{}, fmt.Errorf("error decoding waveform data: %w", err)
 	}
 
-	floats.Scale(waveformResponse.Factor, waveform)
+	floats.Scale(waveformResponse.Factor, samples)
 
-	return waveform, waveformResponse.SampleRate, nil
+	waveform := waveforms.Waveform{Samples: samples, SampleRate: waveformResponse.SampleRate}
+
+	return waveform, nil
 }
 
 type SpectrumResponse struct {
