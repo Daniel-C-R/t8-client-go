@@ -1,4 +1,4 @@
-package timeutil
+package timeconversion
 
 import "time"
 

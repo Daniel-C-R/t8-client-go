@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Daniel-C-R/t8-client-go/internal/decoder"
-	"github.com/Daniel-C-R/t8-client-go/internal/timeutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/timeconversion"
 	"github.com/Daniel-C-R/t8-client-go/pkg/spectra"
 	"github.com/Daniel-C-R/t8-client-go/pkg/waveforms"
 	"gonum.org/v1/gonum/floats"
@@ -37,7 +37,7 @@ type WaveformResponse struct {
 //   - waveforms.Waveform: A struct containing the decoded waveform data, including samples and sample rate.
 //   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
 func (h HttpDataFetcher) GetWaveform(urlParams PmodeUrlTimeParams) (waveforms.Waveform, error) {
-	timestamp, err := timeutil.IsoStringToTimestamp(urlParams.DateTime)
+	timestamp, err := timeconversion.IsoStringToTimestamp(urlParams.DateTime)
 	if err != nil {
 		return waveforms.Waveform{}, fmt.Errorf("error parsing timestamp: %w", err)
 	}
@@ -122,7 +122,7 @@ type SpectrumResponse struct {
 func (h HttpDataFetcher) GetSpectrum(
 	urlParams PmodeUrlTimeParams,
 ) (spectra.Spectrum, float64, float64, error) {
-	timestamp, err := timeutil.IsoStringToTimestamp(urlParams.DateTime)
+	timestamp, err := timeconversion.IsoStringToTimestamp(urlParams.DateTime)
 	if err != nil {
 		return spectra.Spectrum{}, 0, 0, err
 	}
