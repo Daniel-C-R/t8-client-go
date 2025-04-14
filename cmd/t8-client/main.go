@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/datafetcher"
-	"github.com/Daniel-C-R/t8-client-go/internal/plotting"
-	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
+	"github.com/Daniel-C-R/t8-client-go/pkg/datafetcher"
+	"github.com/Daniel-C-R/t8-client-go/pkg/plotting"
+	"github.com/Daniel-C-R/t8-client-go/pkg/spectra"
 	"gonum.org/v1/plot/vg"
 )
 

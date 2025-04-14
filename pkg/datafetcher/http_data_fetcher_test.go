@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/datafetcher"
-	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
-	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
+	"github.com/Daniel-C-R/t8-client-go/pkg/datafetcher"
+	"github.com/Daniel-C-R/t8-client-go/pkg/spectra"
+	"github.com/Daniel-C-R/t8-client-go/pkg/waveforms"
 	"gonum.org/v1/gonum/floats"
 )
 

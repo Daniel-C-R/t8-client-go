@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/cmplx"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
+	"github.com/Daniel-C-R/t8-client-go/pkg/waveforms"
 	"gonum.org/v1/gonum/cmplxs"
 	"gonum.org/v1/gonum/dsp/fourier"
 )
