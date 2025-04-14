@@ -11,6 +11,13 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
+const (
+	outputDir        = "output"
+	waveformPlotPath = outputDir + "/waveform.png"
+	spectrumPlotPath = outputDir + "/spectrum.png"
+	fftSpectrumPath  = outputDir + "/fft_spectrum.png"
+)
+
 func main() {
 	host := flag.String("host", "", "Host URL")
 	machine := flag.String("machine", "", "Machine name")
@@ -53,19 +60,19 @@ func main() {
 		fmt.Println("Error plotting waveform:", err)
 		return
 	}
-	err = os.MkdirAll("output", os.ModePerm)
+	err = os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
 		fmt.Println("Error creating output directory:", err)
 		return
 	}
 
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/waveform.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, waveformPlotPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
 
-	fmt.Println("Waveform plot saved to output/waveform.png")
+	fmt.Println("Waveform plot saved to", waveformPlotPath)
 
 	// T8 Spectrum
 	t8_spectrum, fmin, fmax, err := fetcher.GetSpectrum(urlParams)
@@ -79,13 +86,13 @@ func main() {
 		fmt.Println("Error plotting T8 spectrum:", err)
 		return
 	}
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/spectrum.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, spectrumPlotPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
 
-	fmt.Println("T8 spectrum plot saved to output/spectrum.png")
+	fmt.Println("T8 spectrum plot saved to", spectrumPlotPath)
 
 	// FFT Spectrum
 	waveform.Preprocess()
@@ -97,10 +104,10 @@ func main() {
 		fmt.Println("Error plotting FFT spectrum:", err)
 		return
 	}
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/fft_spectrum.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, fftSpectrumPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
-	fmt.Println("FFT spectrum plot saved to output/fft_spectrum.png")
+	fmt.Println("FFT spectrum plot saved to", fftSpectrumPath)
 }
