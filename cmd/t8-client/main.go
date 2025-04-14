@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
+	"github.com/Daniel-C-R/t8-client-go/internal/datafetcher"
 	"github.com/Daniel-C-R/t8-client-go/internal/plotutil"
 	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"gonum.org/v1/plot/vg"
@@ -28,7 +28,7 @@ func main() {
 	user := os.Getenv("T8_CLIENT_USER")
 	password := os.Getenv("T8_CLIENT_PASSWORD")
 
-	urlParams := getdata.NewPmodeUrlTimeParams(
+	urlParams := datafetcher.NewPmodeUrlTimeParams(
 		*host,
 		*machine,
 		*point,
@@ -39,7 +39,7 @@ func main() {
 	)
 
 	// Waveform
-	waveform, err := getdata.GetWaveform(urlParams)
+	waveform, err := datafetcher.GetWaveform(urlParams)
 	if err != nil {
 		fmt.Println("Error getting waveform:", err)
 		return
@@ -65,7 +65,7 @@ func main() {
 	fmt.Println("Waveform plot saved to output/waveform.png")
 
 	// T8 Spectrum
-	t8_spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
+	t8_spectrum, fmin, fmax, err := datafetcher.GetSpectrum(urlParams)
 	if err != nil {
 		fmt.Println("Error getting T8 spectrum:", err)
 		return

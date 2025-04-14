@@ -1,4 +1,4 @@
-package getdata
+package datafetcher
 
 import (
 	"encoding/json"

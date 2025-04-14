@@ -1,4 +1,4 @@
-package getdata_test
+package datafetcher_test
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
+	"github.com/Daniel-C-R/t8-client-go/internal/datafetcher"
 	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
 	"github.com/Daniel-C-R/t8-client-go/internal/waveforms"
 	"gonum.org/v1/gonum/floats"
@@ -15,7 +15,7 @@ import (
 
 // TestGetWaveformSuccess tests the successful retrieval of a waveform.
 func TestGetWaveformSuccess(t *testing.T) {
-	mockWaveformResponse := getdata.WaveformResponse{
+	mockWaveformResponse := datafetcher.WaveformResponse{
 		RawWaveform: "eJxjZPj//389QwMAEP4D/g==",
 		Factor:      2.0,
 		SampleRate:  2560,
@@ -37,7 +37,7 @@ func TestGetWaveformSuccess(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -47,7 +47,7 @@ func TestGetWaveformSuccess(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -66,7 +66,7 @@ func TestGetWaveformFailure(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -76,7 +76,7 @@ func TestGetWaveformFailure(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -99,7 +99,7 @@ func TestGetWaveformInvalidJSON(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -109,7 +109,7 @@ func TestGetWaveformInvalidJSON(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -125,14 +125,14 @@ func TestGetWaveformInvalidTimestamp(t *testing.T) {
 	mock_server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(getdata.WaveformResponse{}); err != nil {
+			if err := json.NewEncoder(w).Encode(datafetcher.WaveformResponse{}); err != nil {
 				t.Fatalf("failed to encode response: %v", err)
 			}
 		}),
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -142,7 +142,7 @@ func TestGetWaveformInvalidTimestamp(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -165,7 +165,7 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -175,7 +175,7 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -188,7 +188,7 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 
 // TestGetWaveformInvalidWaveformData tests the case when the server returns invalid waveform data.
 func TestGetWaveformInvalidWaveformData(t *testing.T) {
-	mockWaveformResponse := getdata.WaveformResponse{
+	mockWaveformResponse := datafetcher.WaveformResponse{
 		RawWaveform: "invalid_waveform_data",
 	}
 
@@ -202,7 +202,7 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -212,7 +212,7 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := getdata.GetWaveform(mockPmodeTimeParams)
+	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -225,7 +225,7 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 
 // TestGetSpectrumSuccess tests the successful retrieval of a spectrum.
 func TestGetSpectrumSuccess(t *testing.T) {
-	mockSpectrumResponse := getdata.SpectrumResponse{
+	mockSpectrumResponse := datafetcher.SpectrumResponse{
 		RawSpectrum: "eJxjZPj//389QwMAEP4D/g==",
 		Factor:      2.0,
 		Fmin:        0.0,
@@ -250,7 +250,7 @@ func TestGetSpectrumSuccess(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -260,7 +260,7 @@ func TestGetSpectrumSuccess(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -287,7 +287,7 @@ func TestGetSpectrumFailure(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -297,7 +297,7 @@ func TestGetSpectrumFailure(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -328,7 +328,7 @@ func TestGetSpectrumInvalidJSON(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -338,7 +338,7 @@ func TestGetSpectrumInvalidJSON(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -362,14 +362,14 @@ func TestGetSpectrumInvalidTimestamp(t *testing.T) {
 	mock_server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(getdata.SpectrumResponse{}); err != nil {
+			if err := json.NewEncoder(w).Encode(datafetcher.SpectrumResponse{}); err != nil {
 				t.Fatalf("failed to encode response: %v", err)
 			}
 		}),
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -379,7 +379,7 @@ func TestGetSpectrumInvalidTimestamp(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -410,7 +410,7 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -420,7 +420,7 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -441,7 +441,7 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 
 // TestGetSpectrumInvalidSpectrumData tests the case when the server returns invalid spectrum data.
 func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
-	mockSpectrumResponse := getdata.SpectrumResponse{
+	mockSpectrumResponse := datafetcher.SpectrumResponse{
 		RawSpectrum: "invalid_spectrum_data",
 	}
 
@@ -455,7 +455,7 @@ func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := getdata.NewPmodeUrlTimeParams(
+	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
 		mock_server.URL,
 		"test_machine",
 		"test_point",
@@ -465,7 +465,7 @@ func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := getdata.GetSpectrum(mockPmodeTimeParams)
+	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
