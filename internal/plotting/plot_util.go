@@ -1,4 +1,4 @@
-package plotutil
+package plotting
 
 import (
 	"github.com/Daniel-C-R/t8-client-go/internal/spectra"
