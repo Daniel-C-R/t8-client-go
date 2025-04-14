@@ -47,7 +47,9 @@ func TestGetWaveformSuccess(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -76,7 +78,9 @@ func TestGetWaveformFailure(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -109,7 +113,9 @@ func TestGetWaveformInvalidJSON(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -142,7 +148,9 @@ func TestGetWaveformInvalidTimestamp(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -175,7 +183,9 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -212,7 +222,9 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 		"password",
 	)
 
-	waveform, err := datafetcher.GetWaveform(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -260,7 +272,9 @@ func TestGetSpectrumSuccess(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -297,7 +311,9 @@ func TestGetSpectrumFailure(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -338,7 +354,9 @@ func TestGetSpectrumInvalidJSON(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -379,7 +397,9 @@ func TestGetSpectrumInvalidTimestamp(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -420,7 +440,9 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")
@@ -465,7 +487,9 @@ func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
 		"password",
 	)
 
-	spectrum, fmin, fmax, err := datafetcher.GetSpectrum(mockPmodeTimeParams)
+	fetcher := datafetcher.HttpDataFetcher{}
+
+	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
 	if err == nil {
 		t.Fatalf("expected error, got none")

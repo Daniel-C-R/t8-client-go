@@ -38,8 +38,11 @@ func main() {
 		password,
 	)
 
+	// Updated to use the HttpDataFetcher implementation
+	fetcher := datafetcher.HttpDataFetcher{}
+
 	// Waveform
-	waveform, err := datafetcher.GetWaveform(urlParams)
+	waveform, err := fetcher.GetWaveform(urlParams)
 	if err != nil {
 		fmt.Println("Error getting waveform:", err)
 		return
@@ -65,7 +68,7 @@ func main() {
 	fmt.Println("Waveform plot saved to output/waveform.png")
 
 	// T8 Spectrum
-	t8_spectrum, fmin, fmax, err := datafetcher.GetSpectrum(urlParams)
+	t8_spectrum, fmin, fmax, err := fetcher.GetSpectrum(urlParams)
 	if err != nil {
 		fmt.Println("Error getting T8 spectrum:", err)
 		return
