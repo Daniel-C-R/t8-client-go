@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/Daniel-C-R/t8-client-go/pkg/datafetcher"
-	"github.com/Daniel-C-R/t8-client-go/pkg/plotting"
 	"github.com/Daniel-C-R/t8-client-go/pkg/spectra"
 	"gonum.org/v1/plot/vg"
 )
@@ -55,7 +54,7 @@ func main() {
 		return
 	}
 
-	plot, err := plotting.PlotWaveform(waveform)
+	plot, err := waveform.Plot()
 	if err != nil {
 		fmt.Println("Error plotting waveform:", err)
 		return
@@ -81,7 +80,7 @@ func main() {
 		return
 	}
 
-	plot, err = plotting.PlotSpectrum(t8_spectrum, fmin, fmax)
+	plot, err = t8_spectrum.Plot(fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting T8 spectrum:", err)
 		return
@@ -99,7 +98,7 @@ func main() {
 
 	spectrum := spectra.SpectrumFromWaveform(waveform, fmin, fmax)
 
-	plot, err = plotting.PlotSpectrum(spectrum, fmin, fmax)
+	plot, err = spectrum.Plot(fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting FFT spectrum:", err)
 		return

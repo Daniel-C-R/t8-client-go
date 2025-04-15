@@ -7,6 +7,8 @@ import (
 	"github.com/Daniel-C-R/t8-client-go/pkg/waveforms"
 	"gonum.org/v1/gonum/cmplxs"
 	"gonum.org/v1/gonum/dsp/fourier"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
 )
 
 type Spectrum struct {
@@ -78,4 +80,27 @@ func SpectrumFromWaveform(waveform waveforms.Waveform, fmin, fmax float64) Spect
 		Frequencies: filteredFreqs,
 		Magnitudes:  filteredSpectrum,
 	}
+}
+
+// Plot genera una gráfica del espectro actual.
+func (spectrum Spectrum) Plot(fmin, fmax float64) (*plot.Plot, error) {
+	p := plot.New()
+
+	pts := make(plotter.XYs, len(spectrum.Magnitudes))
+	for i := range spectrum.Magnitudes {
+		pts[i].X = spectrum.Frequencies[i]
+		pts[i].Y = spectrum.Magnitudes[i]
+	}
+
+	line, err := plotter.NewLine(pts)
+	if err != nil {
+		return nil, err
+	}
+
+	p.Add(line)
+	p.Title.Text = "Spectrum"
+	p.X.Label.Text = "Frequency (Hz)"
+	p.Y.Label.Text = "Magnitude"
+
+	return p, nil
 }

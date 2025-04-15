@@ -2,6 +2,8 @@ package waveforms
 
 import (
 	"gonum.org/v1/gonum/dsp/window"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
 )
 
 type Waveform struct {
@@ -35,4 +37,27 @@ func (waveform Waveform) Preprocess() {
 	waveform.ZeroPadding()
 	// Apply a Hanning window to the waveform
 	window.Hann(waveform.Samples)
+}
+
+// Plot genera una gráfica de la forma de onda actual.
+func (waveform Waveform) Plot() (*plot.Plot, error) {
+	p := plot.New()
+
+	pts := make(plotter.XYs, len(waveform.Samples))
+	for i := range waveform.Samples {
+		pts[i].X = float64(i) / waveform.SampleRate
+		pts[i].Y = waveform.Samples[i]
+	}
+
+	line, err := plotter.NewLine(pts)
+	if err != nil {
+		return nil, err
+	}
+
+	p.Add(line)
+	p.Title.Text = "Waveform"
+	p.X.Label.Text = "Time (s)"
+	p.Y.Label.Text = "Amplitude"
+
+	return p, nil
 }
