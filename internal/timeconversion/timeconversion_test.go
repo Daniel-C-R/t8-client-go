@@ -1,9 +1,9 @@
-package timeutil_test
+package timeconversion_test
 
 import (
 	"testing"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/timeutil"
+	"github.com/Daniel-C-R/t8-client-go/internal/timeconversion"
 )
 
 func TestIsoStringToTimestamp(t *testing.T) {
@@ -29,7 +29,7 @@ func TestIsoStringToTimestamp(t *testing.T) {
 
 	for _, tc := range test {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := timeutil.IsoStringToTimestamp(tc.input)
+			result, err := timeconversion.IsoStringToTimestamp(tc.input)
 			if tc.mustFail {
 				if err == nil {
 					t.Errorf("Expected an error but got none")

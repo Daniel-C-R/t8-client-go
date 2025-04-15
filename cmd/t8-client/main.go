@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Daniel-C-R/t8-client-go/internal/getdata"
-	"github.com/Daniel-C-R/t8-client-go/internal/plotutil"
-	"github.com/Daniel-C-R/t8-client-go/internal/spectrumutil"
-	"github.com/Daniel-C-R/t8-client-go/internal/waveformutil"
+	"github.com/Daniel-C-R/t8-client-go/pkg/datafetcher"
+	"github.com/Daniel-C-R/t8-client-go/pkg/spectra"
 	"gonum.org/v1/plot/vg"
+)
+
+const (
+	outputDir        = "output"
+	waveformPlotPath = outputDir + "/waveform.png"
+	spectrumPlotPath = outputDir + "/spectrum.png"
+	fftSpectrumPath  = outputDir + "/fft_spectrum.png"
 )
 
 func main() {
@@ -29,7 +34,7 @@ func main() {
 	user := os.Getenv("T8_CLIENT_USER")
 	password := os.Getenv("T8_CLIENT_PASSWORD")
 
-	urlParams := getdata.NewPmodeUrlTimeParams(
+	urlParams := datafetcher.NewPmodeUrlTimeParams(
 		*host,
 		*machine,
 		*point,
@@ -39,72 +44,69 @@ func main() {
 		password,
 	)
 
+	// Updated to use the HttpDataFetcher implementation
+	fetcher := datafetcher.HttpDataFetcher{}
+
 	// Waveform
-	waveform, sampleRate, err := getdata.GetWaveform(urlParams)
+	waveform, err := fetcher.GetWaveform(urlParams)
 	if err != nil {
 		fmt.Println("Error getting waveform:", err)
 		return
 	}
 
-	plot, err := plotutil.PlotWaveform(waveform, sampleRate)
+	plot, err := waveform.Plot()
 	if err != nil {
 		fmt.Println("Error plotting waveform:", err)
 		return
 	}
-	err = os.MkdirAll("output", os.ModePerm)
+	err = os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
 		fmt.Println("Error creating output directory:", err)
 		return
 	}
 
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/waveform.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, waveformPlotPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
 
-	fmt.Println("Waveform plot saved to output/waveform.png")
+	fmt.Println("Waveform plot saved to", waveformPlotPath)
 
 	// T8 Spectrum
-	t8_spectrum, fmin, fmax, err := getdata.GetSpectrum(urlParams)
+	t8_spectrum, fmin, fmax, err := fetcher.GetSpectrum(urlParams)
 	if err != nil {
 		fmt.Println("Error getting T8 spectrum:", err)
 		return
 	}
 
-	t8_freqs := make([]float64, len(t8_spectrum))
-	step := (fmax - fmin) / float64(len(t8_spectrum)-1)
-	for i := range t8_freqs {
-		t8_freqs[i] = fmin + step*float64(i)
-	}
-
-	plot, err = plotutil.PlotSpectrum(t8_spectrum, t8_freqs, fmin, fmax)
+	plot, err = t8_spectrum.Plot(fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting T8 spectrum:", err)
 		return
 	}
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/spectrum.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, spectrumPlotPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
 
-	fmt.Println("T8 spectrum plot saved to output/spectrum.png")
+	fmt.Println("T8 spectrum plot saved to", spectrumPlotPath)
 
 	// FFT Spectrum
-	preprocessedWaveform := waveformutil.PreprocessWaveform(waveform)
+	waveform.Preprocess()
 
-	spectrum, freqs := spectrumutil.CalculateSpectrum(preprocessedWaveform, sampleRate, fmin, fmax)
+	spectrum := spectra.SpectrumFromWaveform(waveform, fmin, fmax)
 
-	plot, err = plotutil.PlotSpectrum(spectrum, freqs, fmin, fmax)
+	plot, err = spectrum.Plot(fmin, fmax)
 	if err != nil {
 		fmt.Println("Error plotting FFT spectrum:", err)
 		return
 	}
-	err = plot.Save(8*vg.Inch, 4*vg.Inch, "output/fft_spectrum.png")
+	err = plot.Save(8*vg.Inch, 4*vg.Inch, fftSpectrumPath)
 	if err != nil {
 		fmt.Println("Error saving plot:", err)
 		return
 	}
-	fmt.Println("FFT spectrum plot saved to output/fft_spectrum.png")
+	fmt.Println("FFT spectrum plot saved to", fftSpectrumPath)
 }

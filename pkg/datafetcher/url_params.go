@@ -1,4 +1,4 @@
-package getdata
+package datafetcher
 
 type BaseUrlParams struct {
 	Host     string
