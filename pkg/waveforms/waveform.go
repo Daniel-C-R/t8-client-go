@@ -15,17 +15,20 @@ type Waveform struct {
 // the next power of 2 greater than or equal to its current length. This is
 // achieved by creating a new slice with the padded length and copying the
 // original samples into it, leaving the additional elements initialized to zero.
-func (waveform Waveform) ZeroPadding() {
-	// Find the next power of 2 greater than or equal to the length of the waveform
+func (waveform *Waveform) ZeroPadding() {
+	// Find the next power of 2 greater than or equal to the length of the samples
 	n := len(waveform.Samples)
 	paddedLength := 1
 	for paddedLength < n {
 		paddedLength *= 2
 	}
 
-	// Create a new slice with the padded length and copy the original waveform into it
+	// Create a new slice with the padded length
 	paddedWaveform := make([]float64, paddedLength)
 	copy(paddedWaveform, waveform.Samples)
+
+	// Update the waveform's samples to the padded slice
+	waveform.Samples = paddedWaveform
 }
 
 // Preprocess applies preprocessing steps to the waveform.
