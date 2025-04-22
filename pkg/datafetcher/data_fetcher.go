@@ -37,6 +37,8 @@ type DataFetcher interface {
 	//
 	// Returns:
 	//   - spectra.Spectrum: A struct containing the decoded spectrum data, including frequencies and magnitudes.
+	//   - float64: The minimum frequency of the spectrum.
+	//   - float64: The maximum frequency of the spectrum.
 	//   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
-	GetSpectrum(urlParams PmodeUrlTimeParams) (spectra.Spectrum, error)
+	GetSpectrum(urlParams PmodeUrlTimeParams) (spectra.Spectrum, float64, float64, error)
 }
