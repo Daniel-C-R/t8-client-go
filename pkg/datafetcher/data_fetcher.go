@@ -6,39 +6,31 @@ import (
 )
 
 type DataFetcher interface {
-	// GetWaveform retrieves waveform data from a remote server.
+	// Method to obtain the waveform given its identifier
+	//
+	// Retrieves a waveform record based on its identifier, which is determined by the machine, point, processing mode,
+	// and registration date.
 	//
 	// Parameters:
-	//   - urlParams: A PmodeUrlTimeParams struct containing the following fields:
-	//       - Host: The base URL of the server.
-	//       - Machine: The machine identifier.
-	//       - Point: The measurement point identifier.
-	//       - Pmode: The processing mode.
-	//       - DateTime: The timestamp for the data request in ISO format.
-	//       - User: The username for authentication.
-	//       - Password: The password for authentication.
+	//   - waveformIdentifier: The identifier of the waveform, which includes the machine, point, and processing mode.
 	//
 	// Returns:
-	//   - waveforms.Waveform: A struct containing the decoded waveform data, including samples and sample rate.
-	//   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
-	GetWaveform(urlParams PmodeUrlTimeParams) (waveforms.Waveform, error)
+	//   - A waveform record containing the samples and sample rate.
+	//   - An error if the retrieval fails.
+	GetWaveform(waveformIdentifier PmodeTimeIdentifier) (waveforms.Waveform, error)
 
-	// GetSpectrum retrieves spectrum data from a remote server.
+	// Method to obtain the spectrum given its time-based identifier
+	//
+	// Retrieves a spectrum record along with its frequency range based given its machine, point, processing mode, and
+	// registration date.
 	//
 	// Parameters:
-	//   - urlParams: A PmodeUrlTimeParams struct containing the following fields:
-	//       - Host: The base URL of the server.
-	//       - Machine: The machine identifier.
-	//       - Point: The measurement point identifier.
-	//       - Pmode: The processing mode.
-	//       - DateTime: The timestamp for the data request in ISO format.
-	//       - User: The username for authentication.
-	//       - Password: The password for authentication.
+	//   - spectrumIdentifier: The identifier of the spectrum, which includes the machine, point, and processing mode.
 	//
 	// Returns:
-	//   - spectra.Spectrum: A struct containing the decoded spectrum data, including frequencies and magnitudes.
-	//   - float64: The minimum frequency of the spectrum.
-	//   - float64: The maximum frequency of the spectrum.
-	//   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
-	GetSpectrum(urlParams PmodeUrlTimeParams) (spectra.Spectrum, float64, float64, error)
+	//   - A spectrum record containing the magnitudes and frequencies.
+	//   - The minimum frequency of the spectrum.
+	//   - The maximum frequency of the spectrum.
+	//   - An error if the retrieval fails.
+	GetSpectrum(spectrumIdentifier PmodeTimeIdentifier) (spectra.Spectrum, float64, float64, error)
 }

@@ -13,7 +13,11 @@ import (
 	"gonum.org/v1/gonum/floats"
 )
 
-type HttpDataFetcher struct{}
+type HttpDataFetcher struct {
+	Host     string
+	User     string
+	Password string
+}
 
 type WaveformResponse struct {
 	RawWaveform string  `json:"data"`
@@ -21,33 +25,34 @@ type WaveformResponse struct {
 	SampleRate  float64 `json:"sample_rate"`
 }
 
-// GetWaveform retrieves waveform data from a remote server.
+// Method to obtain the waveform from and HTTP server.
+//
+// Retivese the waveform data from a remote server using an HTTP GET request.
+// The request is authenticated using basic authentication with a username and password.
+// The URL is constructed using the provided parameters, including the machine identifier,
+// point identifier, processing mode, and timestamp.
 //
 // Parameters:
-//   - urlParams: A PmodeUrlTimeParams struct containing the following fields:
-//   - Host: The base URL of the server.
-//   - Machine: The machine identifier.
-//   - Point: The measurement point identifier.
-//   - Pmode: The processing mode.
-//   - DateTime: The timestamp for the data request in ISO format.
-//   - User: The username for authentication.
-//   - Password: The password for authentication.
+//   - waveformIdentifier: A PmodeTimeIdentifier structh with the machine, point, processing mode,
+//     and time in ISO format.
 //
 // Returns:
-//   - waveforms.Waveform: A struct containing the decoded waveform data, including samples and sample rate.
+//   - waveforms.Waveform: A struct containing the decoded waveform data.
 //   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
-func (h HttpDataFetcher) GetWaveform(urlParams PmodeUrlTimeParams) (waveforms.Waveform, error) {
-	timestamp, err := timeconversion.IsoStringToTimestamp(urlParams.DateTime)
+func (h HttpDataFetcher) GetWaveform(
+	waveformIdentifier PmodeTimeIdentifier,
+) (waveforms.Waveform, error) {
+	timestamp, err := timeconversion.IsoStringToTimestamp(waveformIdentifier.DateTime)
 	if err != nil {
 		return waveforms.Waveform{}, fmt.Errorf("error parsing timestamp: %w", err)
 	}
 
 	url := fmt.Sprintf(
 		"%s/waves/%s/%s/%s/%d",
-		urlParams.Host,
-		urlParams.Machine,
-		urlParams.Point,
-		urlParams.Pmode,
+		h.Host,
+		waveformIdentifier.Machine,
+		waveformIdentifier.Point,
+		waveformIdentifier.Pmode,
 		timestamp,
 	)
 
@@ -56,7 +61,7 @@ func (h HttpDataFetcher) GetWaveform(urlParams PmodeUrlTimeParams) (waveforms.Wa
 		return waveforms.Waveform{}, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.SetBasicAuth(urlParams.User, urlParams.Password)
+	req.SetBasicAuth(h.User, h.Password)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -102,37 +107,38 @@ type SpectrumResponse struct {
 	Fmax        float64 `json:"max_freq"`
 }
 
-// GetSpectrum retrieves spectrum data from a remote server.
+// Method to obtain the spectrum from and HTTP server.
+//
+// Retivese the spectrum data from a remote server using an HTTP GET request.
+// The request is authenticated using basic authentication with a username and password.
+// The URL is constructed using the provided parameters, including the machine identifier,
+// point identifier, processing mode, and timestamp.
 //
 // Parameters:
-//   - urlParams: A PmodeUrlTimeParams struct containing the following fields:
-//   - Host: The base URL of the server.
-//   - Machine: The machine identifier.
-//   - Point: The measurement point identifier.
-//   - Pmode: The processing mode.
-//   - DateTime: The timestamp for the data request in ISO format.
-//   - User: The username for authentication.
-//   - Password: The password for authentication.
+//   - spectrumIdentifier: A PmodeTimeIdentifier structh with the machine, point, processing mode,
+//     and time in ISO format.
 //
 // Returns:
-//   - spectra.Spectrum: A struct containing the decoded spectrum data, including frequencies and magnitudes.
-//   - float64: The minimum frequency of the spectrum.
-//   - float64: The maximum frequency of the spectrum.
-//   - error: An error if the request fails, the response cannot be decoded, or any other issue occurs.
+//   - spectra.Spectrum: A struct containing the decoded spectrum data.
+//   - error: An error if the request fails, the response cannot be decoded, or any other issue
+// 	   occurs.
+//   - fmin: The minimum frequency of the spectrum.
+//   - fmax: The maximum frequency of the spectrum.
+
 func (h HttpDataFetcher) GetSpectrum(
-	urlParams PmodeUrlTimeParams,
+	spectrumIdentifier PmodeTimeIdentifier,
 ) (spectra.Spectrum, float64, float64, error) {
-	timestamp, err := timeconversion.IsoStringToTimestamp(urlParams.DateTime)
+	timestamp, err := timeconversion.IsoStringToTimestamp(spectrumIdentifier.DateTime)
 	if err != nil {
 		return spectra.Spectrum{}, 0, 0, err
 	}
 
 	url := fmt.Sprintf(
 		"%s/spectra/%s/%s/%s/%d",
-		urlParams.Host,
-		urlParams.Machine,
-		urlParams.Point,
-		urlParams.Pmode,
+		h.Host,
+		spectrumIdentifier.Machine,
+		spectrumIdentifier.Point,
+		spectrumIdentifier.Pmode,
 		timestamp,
 	)
 
@@ -141,7 +147,7 @@ func (h HttpDataFetcher) GetSpectrum(
 		return spectra.Spectrum{}, 0, 0, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.SetBasicAuth(urlParams.User, urlParams.Password)
+	req.SetBasicAuth(h.User, h.Password)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

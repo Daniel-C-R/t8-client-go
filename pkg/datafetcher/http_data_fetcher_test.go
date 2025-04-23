@@ -37,17 +37,18 @@ func TestGetWaveformSuccess(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 	if err != nil {
@@ -68,17 +69,18 @@ func TestGetWaveformFailure(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
@@ -103,17 +105,18 @@ func TestGetWaveformInvalidJSON(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
@@ -138,17 +141,18 @@ func TestGetWaveformInvalidTimestamp(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"invalid_timestamp",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
@@ -173,17 +177,18 @@ func TestGetWaveformEmptyResponse(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
@@ -212,17 +217,18 @@ func TestGetWaveformInvalidWaveformData(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	waveform, err := fetcher.GetWaveform(mockPmodeTimeParams)
 
@@ -262,17 +268,18 @@ func TestGetSpectrumSuccess(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 	if err != nil {
@@ -301,17 +308,18 @@ func TestGetSpectrumFailure(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
@@ -344,17 +352,18 @@ func TestGetSpectrumInvalidJSON(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
@@ -387,17 +396,18 @@ func TestGetSpectrumInvalidTimestamp(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"invalid_timestamp",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
@@ -430,17 +440,18 @@ func TestGetSpectrumEmptyResponse(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 
@@ -477,17 +488,18 @@ func TestGetSpectrumInvalidSpectrumData(t *testing.T) {
 	)
 	defer mock_server.Close()
 
-	mockPmodeTimeParams := datafetcher.NewPmodeUrlTimeParams(
-		mock_server.URL,
+	mockPmodeTimeParams := datafetcher.NewPmodeTimeIdentifier(
 		"test_machine",
 		"test_point",
 		"test_pmode",
 		"2019-04-10T14:48:44",
-		"user",
-		"password",
 	)
 
-	fetcher := datafetcher.HttpDataFetcher{}
+	fetcher := datafetcher.HttpDataFetcher{
+		Host:     mock_server.URL,
+		User:     "user",
+		Password: "password",
+	}
 
 	spectrum, fmin, fmax, err := fetcher.GetSpectrum(mockPmodeTimeParams)
 

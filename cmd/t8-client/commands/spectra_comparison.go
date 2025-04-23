@@ -29,21 +29,22 @@ the spectrum of the waveform using the gonum package and compares it
 with the spectrum fetched from the T8 device, saving some plots in a 
 directory called output.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			urlParams := datafetcher.NewPmodeUrlTimeParams(
-				baseUrlParams.Host,
+			// Create data fetcher
+			waveformIdentifier := datafetcher.NewPmodeTimeIdentifier(
 				cmd.Flag("machine").Value.String(),
 				cmd.Flag("point").Value.String(),
 				cmd.Flag("pmode").Value.String(),
 				cmd.Flag("datetime").Value.String(),
-				baseUrlParams.User,
-				baseUrlParams.Password,
 			)
 
-			// Updated to use the HttpDataFetcher implementation
-			fetcher := datafetcher.HttpDataFetcher{}
+			dataFetcher := datafetcher.HttpDataFetcher{
+				Host:     baseUrlParams.Host,
+				User:     baseUrlParams.User,
+				Password: baseUrlParams.Password,
+			}
 
 			// Waveform
-			waveform, err := fetcher.GetWaveform(urlParams)
+			waveform, err := dataFetcher.GetWaveform(waveformIdentifier)
 			if err != nil {
 				fmt.Println("Error getting waveform:", err)
 				return
@@ -69,7 +70,7 @@ directory called output.`,
 			fmt.Println("Waveform plot saved to", waveformPlotPath)
 
 			// T8 Spectrum
-			t8_spectrum, fmin, fmax, err := fetcher.GetSpectrum(urlParams)
+			t8_spectrum, fmin, fmax, err := dataFetcher.GetSpectrum(waveformIdentifier)
 			if err != nil {
 				fmt.Println("Error getting T8 spectrum:", err)
 				return
